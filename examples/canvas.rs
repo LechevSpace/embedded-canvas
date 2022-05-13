@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //
     // 2. Draw on the center of the canvas and crop it (on the right):
     // - a rectangle - 100 x 100
-    // - circle - 99 diameter
+    // - circle - 98 diameter (1 pixel on each side accounts for the rectangle size)
     {
         let canvas_size = Size {
             width: 200,
@@ -28,20 +28,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // first canvas - not cropped and on the left side
         // it has an outline to see that it's actually cropped
         let mut canvas = {
-            let mut canvas = Canvas::<Rgb555>::new(Point { x: 0, y: 0 }, canvas_size);
+            let mut canvas = Canvas::<Rgb555>::new(canvas_size);
 
             // draw a rectangle smaller than the canvas (with 1px)
-            let canvas_rectangle = Rectangle::new(canvas.top_left, canvas_size - Size::new_equal(1));
+            let canvas_rectangle = Rectangle::new(Point::zero(), canvas_size);
 
             let canvas_outline =
-                canvas_rectangle.into_styled(PrimitiveStyle::with_stroke(Rgb555::WHITE, 1));
+                canvas_rectangle.into_styled(PrimitiveStyle::with_stroke(Rgb555::YELLOW, 1));
             // draw the canvas rectangle for debugging
             canvas_outline.draw(&mut canvas)?;
 
             canvas
         };
 
-        canvas.draw(&mut display)?;
+        // Place the canvas at a specific point on the display and draw it
+        canvas.place_at(Point::zero()).draw(&mut display)?;
 
         // prepare for drawing
         let drawing_size = Size {
@@ -55,19 +56,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         rectangle.draw(&mut canvas)?;
 
         // create a circle less than the rectangle of the drawing
-        let circle = Circle::with_center(canvas.center(), 99)
-            .into_styled(PrimitiveStyle::with_stroke(Rgb555::WHITE, 1));
+        let circle = Circle::with_center(canvas.center(), 98)
+            .into_styled(PrimitiveStyle::with_stroke(Rgb555::RED, 1));
         circle.draw(&mut canvas)?;
 
         // prepare the are to be cropped
         let crop_area = Rectangle::with_center(canvas.center(), drawing_size);
 
         // crop the canvas
-        let mut cropped_canvas = canvas.crop(&crop_area).expect("Should crop");
+        let cropped_canvas = canvas.crop(&crop_area).expect("Should crop");
 
         // draw the cropped Canvas on to the display and offset it by 80px to the right of the non-cropped one
         cropped_canvas
-            .translate_mut(Point { x: canvas.bounding_box().size.width as i32 + 80, y: 0 })
+            // place the cropped canvas 80px away from the original canvas with the outline
+            .place_at(Point {
+                x: canvas.bounding_box().size.width as i32 + 80,
+                y: 0,
+            })
             .draw(&mut display)?;
     }
 
