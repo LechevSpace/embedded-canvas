@@ -1,5 +1,6 @@
 #![no_std]
 
-pub mod canvas;
+mod canvas;
 
-pub use canvas::Canvas;
+#[doc(inline)]
+pub use canvas::{Canvas, CanvasAt};

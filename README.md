@@ -1,12 +1,15 @@
 # `embedded-canvas`
-Draw anything on canvas before drawing it on an embedded display.
+> canvas - a piece of cloth backed or framed as a surface for a painting
 
-`embedded-graphics` compatible crate for a Canvas on which you can draw and crop before drawing it to the display.
+
+Draw anything with ease on a canvas before drawing it on an embedded display, compatible with [`embedded-graphics`].
 
 - `no_std`
 - Requires `alloc`
 
+- [`embedded-graphics`]: https://crates.io/crates/embedded-graphics
 ## How to work with canvases
+
 There are 2 main structs you can work with:
 
 ### `Canvas`
