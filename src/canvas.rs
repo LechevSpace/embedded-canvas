@@ -4,48 +4,92 @@ use alloc::{boxed::Box, vec};
 
 use embedded_graphics::{prelude::*, primitives::Rectangle};
 
+/// Canvas on which you can draw but it's not drawable on the display yet.
+/// You must use one of the methods
 pub struct Canvas<C: PixelColor> {
-    pub canvas_at: CanvasAt<C>,
+    /// The size of the Canvas
+    pub canvas: Size,
+    pub pixels: Box<[Option<C>]>,
 }
 
 impl<C: PixelColor> Canvas<C> {
     pub fn new(canvas: Size) -> Self {
         Self {
-            canvas_at: CanvasAt::new(Point::zero(), canvas),
+            canvas,
+            pixels: new_pixels(canvas, None),
         }
     }
 
     pub fn with_default_color(canvas: Size, default_color: C) -> Self {
         Self {
-            canvas_at: CanvasAt::with_default_color(Point::zero(), canvas, default_color),
+            canvas,
+            pixels: new_pixels(canvas, default_color.into()),
         }
+    }
+
+    /// Helper method that returns the index in the array of pixels
+    fn point_to_index(&self, point: Point) -> Option<usize> {
+        point_to_index(self.canvas, Point::zero(), point)
+    }
+
+    fn index_to_point(&self, index: usize) -> Option<Point> {
+        index_to_point(self.canvas, index)
     }
 
     /// Returns the center of the bounding box
     pub fn center(&self) -> Point {
-        self.canvas_at.bounding_box().center()
+        Rectangle::new(Point::zero(), self.canvas).center()
     }
 
+    /// Create a new cropped [`Canvas`].
+    ///
+    /// This method takes into account the top left point of the `area` you'd like
+    /// to crop relative to the **[`Canvas`]** itself.
+    // todo: make safer
     pub fn crop(&self, area: &Rectangle) -> Option<Canvas<C>> {
-        let cropped = self.canvas_at.crop(area);
+        let mut new = Canvas::new(area.size);
 
-        cropped.map(|canvas_at| Self { canvas_at })
+        // returns None when width or height is `0`
+        // it's safe to return `None` for Canvas too!
+        let area_bottom_right = area.bottom_right()?;
+
+        let new_pixels = self.pixels.iter().enumerate().filter_map(|(index, color)| {
+            let color = match color {
+                Some(color) => *color,
+                None => return None,
+            };
+
+            // Canvas always starts from `Point::zero()`
+            let point = self.index_to_point(index).unwrap();
+
+            // for here on, we should compare the point based on the area we want to crop
+            if point >= area.top_left && point <= area_bottom_right {
+                // remove the area top_left to make the origin at `Point::zero()` for the cropped part
+                let pixel = Pixel(point - area.top_left, color);
+
+                Some(pixel)
+            } else {
+                None
+            }
+        });
+
+        new.draw_iter(new_pixels).ok().map(|_| new)
     }
 
+    /// Sets the place with top left offset where the canvas will be drawn to the display.
     pub fn place_at(&self, top_left: Point) -> CanvasAt<C> {
-        let mut canvas_at = self.canvas_at.clone();
-
-        canvas_at.top_left = top_left;
-
-        canvas_at
+        CanvasAt {
+            top_left,
+            canvas: self.canvas,
+            pixels: self.pixels.clone(),
+        }
     }
 
+    /// Sets the place from top left where the canvas will be drawn to the display.
     pub fn place_center(&self, center: Point) -> CanvasAt<C> {
-        let mut canvas_at = self.canvas_at.clone();
+        let top_left = center - center_offset(self.canvas);
 
-        canvas_at.top_left = center - center_offset(canvas_at.canvas);
-
-        canvas_at
+        self.place_at(top_left)
     }
 }
 
@@ -57,10 +101,11 @@ impl<C: PixelColor> Dimensions for CanvasAt<C> {
 
 impl<C: PixelColor> OriginDimensions for Canvas<C> {
     fn size(&self) -> Size {
-        self.canvas_at.canvas
+        self.canvas
     }
 }
 
+/// Canvas which is drawable on the display at provided point.
 #[derive(Debug, Clone)]
 pub struct CanvasAt<C: PixelColor> {
     pub top_left: Point,
@@ -70,9 +115,7 @@ pub struct CanvasAt<C: PixelColor> {
 
 impl<C: PixelColor> CanvasAt<C> {
     pub fn new(top_left: Point, canvas: Size) -> Self {
-        let pixel_count = canvas.width as usize * canvas.height as usize;
-
-        let pixels = vec![None; pixel_count].into_boxed_slice();
+        let pixels = new_pixels(canvas, None);
 
         Self {
             top_left,
@@ -119,39 +162,43 @@ impl<C: PixelColor> CanvasAt<C> {
     }
 
     fn index_to_point(&self, index: usize) -> Option<Point> {
-        index_to_point(self.canvas, index)
+        // we account for the displacement of the current Canvas
+        index_to_point(self.canvas, index).map(|point| point + self.top_left)
     }
 
+    /// Create a new cropped [`CanvasAt`].
+    ///
+    /// This method takes into account the top left point of the `area` you'd like
+    /// to crop relative to the **display**.
+    // todo: make safer
     pub fn crop(&self, area: &Rectangle) -> Option<CanvasAt<C>> {
         let mut new = CanvasAt::new(area.top_left, area.size);
 
-        let new_pixels = self
-            .pixels
-            .into_iter()
-            .enumerate()
-            .filter_map(|(index, color)| {
-                let color = match color {
-                    Some(color) => *color,
-                    None => return None,
-                };
+        // returns None when width or height is `0`
+        // it's safe to return `None` for Canvas too!
+        let area_bottom_right = area.bottom_right()?;
 
-                // we account for the displacement of the current Canvas
-                let point = self.index_to_point(index).unwrap() + self.top_left;
+        let new_pixels = self.pixels.iter().enumerate().filter_map(|(index, color)| {
+            let color = match color {
+                Some(color) => *color,
+                None => return None,
+            };
 
-                // for here on, we should compare the point based on the area we want to crop
-                if point >= area.top_left && point <= area.bottom_right().unwrap() {
-                    let pixel = Pixel(point, color);
+            let point = self.index_to_point(index).expect("Will never fail");
 
-                    Some(pixel)
-                } else {
-                    None
-                }
-            });
+            // for here on, we should compare the point based on the area we want to crop
+            if point >= area.top_left && point <= area_bottom_right {
+                let pixel = Pixel(point, color);
+
+                Some(pixel)
+            } else {
+                None
+            }
+        });
 
         new.draw_iter(new_pixels).ok().map(|_| new)
     }
 }
-
 
 /// Returns the center offset.
 ///
@@ -182,6 +229,12 @@ fn index_to_point(size: Size, index: usize) -> Option<Point> {
     Some(point)
 }
 
+fn new_pixels<C: PixelColor>(size: Size, color: Option<C>) -> Box<[Option<C>]> {
+    let pixel_count = size.width as usize * size.height as usize;
+
+    vec![color; pixel_count].into_boxed_slice()
+}
+
 impl<C: PixelColor> DrawTarget for CanvasAt<C> {
     type Color = C;
     type Error = core::convert::Infallible;
@@ -208,7 +261,13 @@ impl<C: PixelColor> DrawTarget for Canvas<C> {
     where
         I: IntoIterator<Item = Pixel<Self::Color>>,
     {
-        self.canvas_at.draw_iter(pixels)
+        for Pixel(point, color) in pixels.into_iter() {
+            if let Some(index) = self.point_to_index(point) {
+                self.pixels[index] = Some(color);
+            }
+        }
+
+        Ok(())
     }
 }
 
@@ -224,13 +283,10 @@ where
         D: DrawTarget<Color = C>,
     {
         let pixels_iter = self.bounding_box().points().filter_map(|point| {
-            let color = self.get_pixel(point);
-
-            match color {
+            self.get_pixel(point).map(|color| {
                 // for the drawing position we need to account for the top_left offset of the drawn display
-                Some(color) => Some(Pixel(point, color)),
-                None => None,
-            }
+                Pixel(point, color)
+            })
         });
 
         target.draw_iter(pixels_iter)
@@ -271,15 +327,11 @@ mod test {
 
         {
             let center = Point::new(160, 120);
-            let center_index = canvas
-                .canvas_at
-                .point_to_index(center)
-                .expect("Inside the canvas");
+            let center_index = canvas.point_to_index(center).expect("Inside the canvas");
 
             assert_eq!(
                 center,
                 canvas
-                    .canvas_at
                     .index_to_point(center_index)
                     .expect("Should fetch the index")
             );
@@ -287,29 +339,23 @@ mod test {
         {
             let bottom_right = Point::new(320 - 1, 240 - 1);
             let br_index = canvas
-                .canvas_at
                 .point_to_index(bottom_right)
                 .expect("Inside the canvas");
 
             assert_eq!(
                 bottom_right,
                 canvas
-                    .canvas_at
                     .index_to_point(br_index)
                     .expect("Should fetch the index")
             );
         }
         {
             let top_left = Point::new(0, 0);
-            let tl_index = canvas
-                .canvas_at
-                .point_to_index(top_left)
-                .expect("Inside the canvas");
+            let tl_index = canvas.point_to_index(top_left).expect("Inside the canvas");
 
             assert_eq!(
                 top_left,
                 canvas
-                    .canvas_at
                     .index_to_point(tl_index)
                     .expect("Should fetch the index")
             );
@@ -318,29 +364,23 @@ mod test {
         {
             let bottom_left = Point::new(0, 240 - 1);
             let bl_index = canvas
-                .canvas_at
                 .point_to_index(bottom_left)
                 .expect("Inside the canvas");
 
             assert_eq!(
                 bottom_left,
                 canvas
-                    .canvas_at
                     .index_to_point(bl_index)
                     .expect("Should fetch the index")
             );
         }
         {
             let top_right = Point::new(320 - 1, 0);
-            let tr_index = canvas
-                .canvas_at
-                .point_to_index(top_right)
-                .expect("Inside the canvas");
+            let tr_index = canvas.point_to_index(top_right).expect("Inside the canvas");
 
             assert_eq!(
                 top_right,
                 canvas
-                    .canvas_at
                     .index_to_point(tr_index)
                     .expect("Should fetch the index")
             );
