@@ -5,7 +5,6 @@ use alloc::{boxed::Box, vec};
 use embedded_graphics_core::{prelude::*, primitives::Rectangle};
 
 /// Canvas on which you can draw but it's not drawable on the display yet.
-/// You must use one of the methods
 pub struct Canvas<C: PixelColor> {
     /// The size of the Canvas
     pub canvas: Size,
