@@ -11,7 +11,6 @@ pub const DISPLAY_360P: Size = Size::new(480, 360);
 pub const DISPLAY_720P: Size = Size::new(1280, 720);
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    env_logger::init();
     let mut display = SimulatorDisplay::<Rgb555>::new(DISPLAY_360P);
 
     // 1. Draw the Canvas with an outline rectangle (on the left)
@@ -90,7 +89,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let output_settings = OutputSettingsBuilder::new().build();
 
     Window::new(
-        "Canvas with outline (left) & 2 Canvas (right)",
+        "Canvas with outline (left) & 2 CanvasAt (right)",
         &output_settings,
     )
     .show_static(&display);

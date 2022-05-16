@@ -2,7 +2,7 @@ extern crate alloc;
 
 use alloc::{boxed::Box, vec};
 
-use embedded_graphics::{prelude::*, primitives::Rectangle};
+use embedded_graphics_core::{prelude::*, primitives::Rectangle};
 
 /// Canvas on which you can draw but it's not drawable on the display yet.
 /// You must use one of the methods
@@ -115,6 +115,7 @@ pub struct CanvasAt<C: PixelColor> {
 
 impl<C: PixelColor> CanvasAt<C> {
     pub fn new(top_left: Point, canvas: Size) -> Self {
+        // let vector2:  nalgebra::base::Vector2<u32> = canvas.into();
         let pixels = new_pixels(canvas, None);
 
         Self {
@@ -171,6 +172,7 @@ impl<C: PixelColor> CanvasAt<C> {
     /// This method takes into account the top left point of the `area` you'd like
     /// to crop relative to the **display**.
     // todo: make safer
+    /// If width or height of the rectangle is `0`, this method will return [`None`]. See [`Rectangle::bottom_right()`]
     pub fn crop(&self, area: &Rectangle) -> Option<CanvasAt<C>> {
         let mut new = CanvasAt::new(area.top_left, area.size);
 
@@ -293,7 +295,8 @@ where
     }
 }
 
-impl<C: PixelColor> Transform for CanvasAt<C> {
+#[cfg(feature = "transform")]
+impl<C: PixelColor> embedded_graphics::transform::Transform for CanvasAt<C> {
     fn translate(&self, by: Point) -> Self {
         Self {
             // update the CanvasAt top_left!
@@ -314,7 +317,7 @@ impl<C: PixelColor> Transform for CanvasAt<C> {
 
 #[cfg(test)]
 mod test {
-    use embedded_graphics::pixelcolor::BinaryColor;
+    use embedded_graphics_core::pixelcolor::BinaryColor;
 
     use super::*;
 

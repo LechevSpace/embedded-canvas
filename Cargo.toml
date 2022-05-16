@@ -1,20 +1,26 @@
 [package]
+authors = ["Lechev.space <dev@lechev.space>", "Lachezar Lechev"]
 name = "embedded-canvas"
 version = "0.1.0"
-authors = ["Lechev.space <dev@lechev.space>", "Lachezar Lechev"]
 
-license = "MIT or Apache-2.0"
 categories = ["embedded", "no-std"]
-keywords = ["embedded-graphics", "graphics", "embedded"]
-repository = "https://github.com/LechevSpace/embedded-canvas"
 edition = "2021"
+keywords = ["embedded-graphics", "graphics", "embedded"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/LechevSpace/embedded-canvas"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = ["transform"]
+# Enables `impl embedded_graphics::transform::Transform for CanvasAt`
+transform = ["embedded-graphics"]
 
 [dependencies]
-log = "=0.4.17"
+embedded-graphics-core = "=0.3.3"
 
-embedded-graphics = "=0.7.1"
+embedded-graphics = {version = "=0.7.1", optional = true}
 
 [dev-dependencies]
-embedded-graphics-simulator = "=0.3.0"
-embedded-text = "=0.5.0"
-env_logger = "=0.9"
+embedded-graphics-simulator = "^0.3.0"
