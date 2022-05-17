@@ -1,6 +1,9 @@
 # `embedded-canvas`
 > canvas - a piece of cloth backed or framed as a surface for a painting
 
+_**NOTE:** This crate is still in development and may have breaking changes from
+one version to another._
+
 `embedded-canvas` is a convenient crate for [`embedded-graphics`]
 and provides a [`Canvas`](#canvas) and [`CanvasAt`](#canvasat) on which you
 can draw anything with ease before drawing the pixels on the embedded display.
