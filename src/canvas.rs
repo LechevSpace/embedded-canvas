@@ -5,13 +5,17 @@ use alloc::{boxed::Box, vec};
 use embedded_graphics_core::{prelude::*, primitives::Rectangle};
 
 /// Canvas on which you can draw but it's not drawable on the display yet.
+///
+/// Draw on the [`Canvas`] using origin of [`Point::zero()`].
 pub struct Canvas<C: PixelColor> {
-    /// The size of the Canvas
+    /// The size of the [`Canvas`].
     pub canvas: Size,
+    /// The pixels of the [`Canvas`].
     pub pixels: Box<[Option<C>]>,
 }
 
 impl<C: PixelColor> Canvas<C> {
+    /// Create a new blank [`Canvas`].
     pub fn new(canvas: Size) -> Self {
         Self {
             canvas,
@@ -19,6 +23,7 @@ impl<C: PixelColor> Canvas<C> {
         }
     }
 
+    /// Create a [`Canvas`] filled with a default color.
     pub fn with_default_color(canvas: Size, default_color: C) -> Self {
         Self {
             canvas,
@@ -35,15 +40,18 @@ impl<C: PixelColor> Canvas<C> {
         index_to_point(self.canvas, index)
     }
 
-    /// Returns the center of the bounding box
+    /// Returns the center of [`Size`] of the [`Canvas`].
     pub fn center(&self) -> Point {
-        Rectangle::new(Point::zero(), self.canvas).center()
+        Point::zero() + center_offset(self.canvas)
     }
 
     /// Create a new cropped [`Canvas`].
     ///
-    /// This method takes into account the top left point of the `area` you'd like
-    /// to crop relative to the **[`Canvas`]** itself.
+    /// This method takes into account the top left [`Point`] of the `area`
+    /// you'd like to crop relative to the [`Canvas`] itself.
+    //
+    /// If the width or height of the [`Rectangle`] is `0`, this method will
+    /// return [`None`] (see [`Rectangle::bottom_right()`])
     // todo: make safer
     pub fn crop(&self, area: &Rectangle) -> Option<Canvas<C>> {
         let mut new = Canvas::new(area.size);
@@ -84,17 +92,11 @@ impl<C: PixelColor> Canvas<C> {
         }
     }
 
-    /// Sets the place from top left where the canvas will be drawn to the display.
+    /// Sets the center of the [`Canvas`] where it will be drawn to the display.
     pub fn place_center(&self, center: Point) -> CanvasAt<C> {
         let top_left = center - center_offset(self.canvas);
 
         self.place_at(top_left)
-    }
-}
-
-impl<C: PixelColor> Dimensions for CanvasAt<C> {
-    fn bounding_box(&self) -> Rectangle {
-        Rectangle::new(self.top_left, self.canvas)
     }
 }
 
@@ -104,17 +106,38 @@ impl<C: PixelColor> OriginDimensions for Canvas<C> {
     }
 }
 
-/// Canvas which is drawable on the display at provided point.
+impl<C: PixelColor> DrawTarget for Canvas<C> {
+    type Color = C;
+    type Error = core::convert::Infallible;
+
+    fn draw_iter<I>(&mut self, pixels: I) -> Result<(), Self::Error>
+    where
+        I: IntoIterator<Item = Pixel<Self::Color>>,
+    {
+        for Pixel(point, color) in pixels.into_iter() {
+            if let Some(index) = self.point_to_index(point) {
+                self.pixels[index] = Some(color);
+            }
+        }
+
+        Ok(())
+    }
+}
+
+/// Canvas which is drawable at the provided [`Point`] (location) on the display.
 #[derive(Debug, Clone)]
 pub struct CanvasAt<C: PixelColor> {
+    /// The top left offset where the [`CanvasAt`] will be drawn to the display.
     pub top_left: Point,
+    /// The size of the [`CanvasAt`].
     pub canvas: Size,
-    pub(crate) pixels: Box<[Option<C>]>,
+    /// The pixels of the [`CanvasAt`].
+    pub pixels: Box<[Option<C>]>,
 }
 
 impl<C: PixelColor> CanvasAt<C> {
+    /// Create a new blank [`CanvasAt`].
     pub fn new(top_left: Point, canvas: Size) -> Self {
-        // let vector2:  nalgebra::base::Vector2<u32> = canvas.into();
         let pixels = new_pixels(canvas, None);
 
         Self {
@@ -124,6 +147,7 @@ impl<C: PixelColor> CanvasAt<C> {
         }
     }
 
+    /// Create a [`CanvasAt`] filled with a default color.
     pub fn with_default_color(top_left: Point, canvas: Size, default_color: C) -> Self {
         let pixel_count = canvas.width as usize * canvas.height as usize;
 
@@ -136,6 +160,7 @@ impl<C: PixelColor> CanvasAt<C> {
         }
     }
 
+    /// Create a new blank [`CanvasAt`] with a set center on the display.
     pub fn with_center(center: Point, size: Size) -> Self {
         // todo: use our own center_offset like in this assoc. fn
         let rect = Rectangle::with_center(center, size);
@@ -143,14 +168,14 @@ impl<C: PixelColor> CanvasAt<C> {
         Self::new(rect.top_left, size)
     }
 
-    /// Returns the center of the bounding box
+    /// Returns the center of the bounding box.
     pub fn center(&self) -> Point {
         self.bounding_box().center()
     }
 
-    /// Returns the color of the pixel at a point.
+    /// Returns the color of the pixel at a given [`Point`].
     ///
-    /// Returns `None` if `point` is outside the display.
+    /// Returns [`None`] if the [`Point`] is outside of the [`CanvasAt`].
     pub fn get_pixel(&self, point: Point) -> Option<C> {
         self.point_to_index(point)
             .and_then(|index| self.pixels.get(index).copied().flatten())
@@ -168,10 +193,12 @@ impl<C: PixelColor> CanvasAt<C> {
 
     /// Create a new cropped [`CanvasAt`].
     ///
-    /// This method takes into account the top left point of the `area` you'd like
-    /// to crop relative to the **display**.
+    /// This method takes into account the top left [`Point`] of the `area`
+    /// you'd like to crop relative to the **display**.
+    ///
+    /// If the width or height of the [`Rectangle`] is `0`, this method will
+    /// return [`None`] (see [`Rectangle::bottom_right()`])
     // todo: make safer
-    /// If width or height of the rectangle is `0`, this method will return [`None`]. See [`Rectangle::bottom_right()`]
     pub fn crop(&self, area: &Rectangle) -> Option<CanvasAt<C>> {
         let mut new = CanvasAt::new(area.top_left, area.size);
 
@@ -201,60 +228,13 @@ impl<C: PixelColor> CanvasAt<C> {
     }
 }
 
-/// Returns the center offset.
-///
-/// The center offset is defined as the offset between the top left corner and
-/// the center point of a rectangle with the given size.
-fn center_offset(size: Size) -> Size {
-    size.saturating_sub(Size::new_equal(1)) / 2
-}
-
-// TODO: make safer
-/// Generic function that will take into account the top_left offset when returning the index
-fn point_to_index(size: Size, top_left_offset: Point, point: Point) -> Option<usize> {
-    // we must account for the top-left corner of the drawing box
-    if let Ok((x, y)) = <(u32, u32)>::try_from(point - top_left_offset) {
-        if x < size.width && y < size.height {
-            return Some((x + y * size.width) as usize);
-        }
+impl<C: PixelColor> Dimensions for CanvasAt<C> {
+    fn bounding_box(&self) -> Rectangle {
+        Rectangle::new(self.top_left, self.canvas)
     }
-
-    None
-}
-
-fn index_to_point(size: Size, index: usize) -> Option<Point> {
-    let x = index as i32 % size.width as i32;
-    let y = index as i32 / size.width as i32;
-    let point = Point { x, y };
-
-    Some(point)
-}
-
-fn new_pixels<C: PixelColor>(size: Size, color: Option<C>) -> Box<[Option<C>]> {
-    let pixel_count = size.width as usize * size.height as usize;
-
-    vec![color; pixel_count].into_boxed_slice()
 }
 
 impl<C: PixelColor> DrawTarget for CanvasAt<C> {
-    type Color = C;
-    type Error = core::convert::Infallible;
-
-    fn draw_iter<I>(&mut self, pixels: I) -> Result<(), Self::Error>
-    where
-        I: IntoIterator<Item = Pixel<Self::Color>>,
-    {
-        for Pixel(point, color) in pixels.into_iter() {
-            if let Some(index) = self.point_to_index(point) {
-                self.pixels[index] = Some(color);
-            }
-        }
-
-        Ok(())
-    }
-}
-
-impl<C: PixelColor> DrawTarget for Canvas<C> {
     type Color = C;
     type Error = core::convert::Infallible;
 
@@ -284,10 +264,8 @@ where
         D: DrawTarget<Color = C>,
     {
         let pixels_iter = self.bounding_box().points().filter_map(|point| {
-            self.get_pixel(point).map(|color| {
-                // for the drawing position we need to account for the top_left offset of the drawn display
-                Pixel(point, color)
-            })
+            // for the drawing position we need to account for the top_left offset of the drawn display
+            self.get_pixel(point).map(|color| Pixel(point, color))
         });
 
         target.draw_iter(pixels_iter)
@@ -295,13 +273,12 @@ where
 }
 
 #[cfg(feature = "transform")]
+#[cfg_attr(docsrs, doc(cfg(feature = "transform")))]
 impl<C: PixelColor> embedded_graphics::transform::Transform for CanvasAt<C> {
     fn translate(&self, by: Point) -> Self {
         Self {
             // update the CanvasAt top_left!
             top_left: self.top_left + by,
-
-            // and update the canvas top_left_offset
             canvas: self.canvas,
             pixels: self.pixels.clone(),
         }
@@ -312,6 +289,41 @@ impl<C: PixelColor> embedded_graphics::transform::Transform for CanvasAt<C> {
 
         self
     }
+}
+
+/// Returns the center offset.
+///
+/// The center offset is defined as the offset between the top left corner and
+/// the center point of a rectangle with the given size.
+fn center_offset(size: Size) -> Size {
+    size.saturating_sub(Size::new_equal(1)) / 2
+}
+
+/// Generic function that will take into account the top_left offset when returning the index
+// TODO: make safer
+fn point_to_index(size: Size, top_left_offset: Point, point: Point) -> Option<usize> {
+    // we must account for the top-left corner of the drawing box
+    if let Ok((x, y)) = <(u32, u32)>::try_from(point - top_left_offset) {
+        if x < size.width && y < size.height {
+            return Some((x + y * size.width) as usize);
+        }
+    }
+
+    None
+}
+
+fn index_to_point(size: Size, index: usize) -> Option<Point> {
+    let x = index as i32 % size.width as i32;
+    let y = index as i32 / size.width as i32;
+    let point = Point { x, y };
+
+    Some(point)
+}
+
+fn new_pixels<C: PixelColor>(size: Size, color: Option<C>) -> Box<[Option<C>]> {
+    let pixel_count = size.width as usize * size.height as usize;
+
+    vec![color; pixel_count].into_boxed_slice()
 }
 
 #[cfg(test)]

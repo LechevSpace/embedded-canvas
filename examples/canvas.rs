@@ -65,12 +65,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let crop_area = Rectangle::with_center(canvas.center(), drawing_size);
 
         // crop the canvas
-        let cropped_canvas = canvas.crop(&crop_area).expect("Should crop")
-        // place the cropped canvas 80px away from the original canvas with the outline
-        .place_at(Point {
-            x: canvas.bounding_box().size.width as i32 + 80,
-            y: 0,
-        });
+        let cropped_canvas = canvas
+            .crop(&crop_area)
+            .expect("Should crop")
+            // place the cropped canvas 80px away from the original canvas with the outline
+            .place_at(Point {
+                x: canvas.bounding_box().size.width as i32 + 80,
+                y: 0,
+            });
 
         // draw the cropped Canvas on to the display and offset it by 80px to the right of the non-cropped one
         cropped_canvas.draw(&mut display)?;

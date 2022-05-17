@@ -3,11 +3,13 @@ authors = ["Lechev.space <dev@lechev.space>", "Lachezar Lechev"]
 name = "embedded-canvas"
 version = "0.1.0"
 
+description = "Draw anything with ease on the Canvas before drawing it to your small hardware display"
 categories = ["embedded", "no-std"]
 edition = "2021"
 keywords = ["embedded-graphics", "graphics", "embedded"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/LechevSpace/embedded-canvas"
+documentation = "https://docs.rs/embedded-canavas"
 
 [package.metadata.docs.rs]
 all-features = true
