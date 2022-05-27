@@ -1,5 +1,7 @@
+//! [![sponsor-us]](https://github.com/sponsors/LechevSpace)&ensp;[![github]](https://github.com/LechevSpace/embedded-canvas)&ensp;[![crates-io]](https://crates.io/crates/embedded-canvas)
+//!
 //! `embedded-canvas` is a convenient crate for [`embedded-graphics`]
-//! and provides a [`Canvas`](#canvas) and [`CanvasAt`](#canvasat) on which you
+//! and provides a [`Canvas`](#canvas) and [`CanvasAt`](#CanvasAt) on which you
 //! can draw anything with ease before drawing the pixels on the embedded display.
 //!
 //! > canvas - a piece of cloth backed or framed as a surface for a painting
@@ -48,6 +50,10 @@
 //! # Crate features
 //! - `default` features - `transform`
 //! - `transform` - enables the trait implementation of [`embedded_graphics::transform::Transform`] for [`CanvasAt`].
+//!
+//! [github]: https://img.shields.io/badge/github-3873AD?style=for-the-badge&labelColor=555555&logo=github
+//! [crates-io]: https://img.shields.io/crates/v/embedded-canvas?logo=rust&style=for-the-badge
+//! [sponsor-us]: https://img.shields.io/github/sponsors/LechevSpace?color=bf3989&label=Sponsor%20us&style=for-the-badge&logoColor=bf3989&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMTYgMTYiIHZlcnNpb249IjEuMSIgd2lkdGg9IjE2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogICAgPHBhdGggZmlsbD0iI2JmMzk4OSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNNC4yNSAyLjVjLTEuMzM2IDAtMi43NSAxLjE2NC0yLjc1IDMgMCAyLjE1IDEuNTggNC4xNDQgMy4zNjUgNS42ODJBMjAuNTY1IDIwLjU2NSAwIDAwOCAxMy4zOTNhMjAuNTYxIDIwLjU2MSAwIDAwMy4xMzUtMi4yMTFDMTIuOTIgOS42NDQgMTQuNSA3LjY1IDE0LjUgNS41YzAtMS44MzYtMS40MTQtMy0yLjc1LTMtMS4zNzMgMC0yLjYwOS45ODYtMy4wMjkgMi40NTZhLjc1Ljc1IDAgMDEtMS40NDIgMEM2Ljg1OSAzLjQ4NiA1LjYyMyAyLjUgNC4yNSAyLjV6TTggMTQuMjVsLS4zNDUuNjY2LS4wMDItLjAwMS0uMDA2LS4wMDMtLjAxOC0uMDFhNy42NDMgNy42NDMgMCAwMS0uMzEtLjE3IDIyLjA3NSAyMi4wNzUgMCAwMS0zLjQzNC0yLjQxNEMyLjA0NSAxMC43MzEgMCA4LjM1IDAgNS41IDAgMi44MzYgMi4wODYgMSA0LjI1IDEgNS43OTcgMSA3LjE1MyAxLjgwMiA4IDMuMDIgOC44NDcgMS44MDIgMTAuMjAzIDEgMTEuNzUgMSAxMy45MTQgMSAxNiAyLjgzNiAxNiA1LjVjMCAyLjg1LTIuMDQ1IDUuMjMxLTMuODg1IDYuODE4YTIyLjA4IDIyLjA4IDAgMDEtMy43NDQgMi41ODRsLS4wMTguMDEtLjAwNi4wMDNoLS4wMDJMOCAxNC4yNXptMCAwbC4zNDUuNjY2YS43NTIuNzUyIDAgMDEtLjY5IDBMOCAxNC4yNXoiPjwvcGF0aD4KPC9zdmc%2BCg%3D%3D
 #![no_std]
 
 #[doc(inline)]
