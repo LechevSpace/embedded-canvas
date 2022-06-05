@@ -52,9 +52,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
 
         // create a rectangle as big as the drawing inside the canvas
-        let rectangle = Rectangle::with_center(canvas.center(), drawing_size)
-            .into_styled(PrimitiveStyle::with_stroke(Rgb555::WHITE, 1));
-        rectangle.draw(&mut canvas)?;
+        // let rectangle = Rectangle::with_center(canvas.center(), drawing_size)
+        //     .into_styled(PrimitiveStyle::with_stroke(Rgb555::WHITE, 1));
+        // rectangle.draw(&mut canvas)?;
 
         // create a circle less than the rectangle of the drawing
         let circle = Circle::with_center(canvas.center(), 98)
@@ -75,7 +75,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             });
 
         // draw the cropped Canvas on to the display and offset it by 80px to the right of the non-cropped one
-        cropped_canvas.draw(&mut display)?;
+        // cropped_canvas.draw(&mut display)?;
 
         // Crop from the cropped canvas, only the circle
         // remove the stroke of the drawn rectangle
