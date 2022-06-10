@@ -37,7 +37,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         canvas
     };
-    
 
     let text_str = "Cropping a \ntext into a \nmagic box.";
     let style = MonoTextStyle::new(&FONT_9X18_BOLD, Rgb555::WHITE);
