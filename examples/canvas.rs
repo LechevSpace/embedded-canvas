@@ -2,7 +2,7 @@ use embedded_canvas::Canvas;
 use embedded_graphics::{
     pixelcolor::Rgb555,
     prelude::*,
-    primitives::{ Circle, PrimitiveStyle, Rectangle },
+    primitives::{Circle, PrimitiveStyle, Rectangle},
 };
 use embedded_graphics_simulator::{OutputSettingsBuilder, SimulatorDisplay, Window};
 
@@ -46,7 +46,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         canvas.place_at(Point::zero()).draw(&mut display)?;
 
         // prepare for drawing
-        let drawing_size = Size {width: 100,height: 100};
+        let drawing_size = Size {
+            width: 100,
+            height: 100,
+        };
 
         // create a rectangle as big as the drawing inside the canvas
         let rectangle = Rectangle::with_center(canvas.center(), drawing_size)
@@ -81,7 +84,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         cropped_canvas
             .crop(&crop_rectangle)
             .expect("Should crop")
-            .translate(Point::new(0, 150))
+            .translate(Point::new(0, 100))
             .draw(&mut display)?;
     }
 
