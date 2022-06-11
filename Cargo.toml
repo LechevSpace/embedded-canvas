@@ -33,9 +33,10 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
-default = ["transform"]
+default = ["transform", "alloc"]
 # Enables `impl embedded_graphics::transform::Transform for CanvasAt`
 transform = ["embedded-graphics"]
+alloc = []
 
 [dependencies]
 embedded-graphics-core = "0.3"
