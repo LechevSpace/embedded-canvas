@@ -61,7 +61,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     cropped_canvas.draw(&mut display)?;
 
     let output_settings = OutputSettingsBuilder::new()
-        .theme(BinaryColorTheme::OledBlue)
+        // .theme(BinaryColorTheme::OledBlue)
         .build();
 
     Window::new("Canvas with cropping", &output_settings).show_static(&display);
