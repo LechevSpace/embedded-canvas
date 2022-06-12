@@ -1,6 +1,9 @@
 use embedded_canvas::Canvas;
 use embedded_graphics::{
-    mono_font::{ascii::FONT_9X18_BOLD, MonoTextStyle},
+    mono_font::{
+        ascii::{FONT_10X20, FONT_9X18_BOLD},
+        MonoTextStyle,
+    },
     pixelcolor::Rgb555,
     prelude::*,
     primitives::{PrimitiveStyle, Rectangle},
@@ -10,7 +13,9 @@ use embedded_graphics_simulator::{
     BinaryColorTheme, OutputSettingsBuilder, SimulatorDisplay, Window,
 };
 
-pub const DISPLAY_90P: Size = Size::new(150, 90);
+pub const DISPLAY_240P: Size = Size::new(320, 240);
+pub const DISPLAY_360P: Size = Size::new(480, 360);
+pub const DISPLAY_720P: Size = Size::new(1280, 720);
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // We draw:
@@ -19,42 +24,44 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //   3. Only the middle line will be fully shown while
     //      the others will be partially visible
 
-    let mut display = SimulatorDisplay::<Rgb555>::new(DISPLAY_90P);
+    let mut display = SimulatorDisplay::<Rgb555>::new(DISPLAY_360P);
 
     let canvas_size = Size {
-        width: 100,
-        height: 46,
+        width: 200,
+        height: 57,
     };
 
-    let mut canvas = {
-        let mut canvas: Canvas<Rgb555> = Canvas::new(canvas_size);
+    let mut canvas: Canvas<Rgb555> = Canvas::new(canvas_size);
 
-        let canvas_box = Rectangle::new(Point::zero(), canvas_size);
+    let canvas_outline = Rectangle::new(Point::zero(), canvas_size);
+    let canvas_style = PrimitiveStyle::new();
+    let canvas_rectangle = canvas_outline.into_styled(canvas_style);
 
-        let canvas_style = canvas_box.into_styled(PrimitiveStyle::with_stroke(Rgb555::YELLOW, 4));
-
-        canvas_style.draw(&mut canvas)?;
-
-        canvas
-    };
+    canvas_rectangle.draw(&mut canvas)?;
 
     let text_str = "Cropping a \ntext into a \nmagic box.";
-    let style = MonoTextStyle::new(&FONT_9X18_BOLD, Rgb555::WHITE);
-    let text = Text::new(text_str, Point::new(4, 8), style);
+    let style = MonoTextStyle::new(&FONT_10X20, Rgb555::WHITE);
+    let text = Text::new(text_str, Point::new(4, 15), style);
 
     text.draw(&mut canvas)?;
 
-    let crop_area = Rectangle::with_center(canvas.center(), canvas_size);
+    let crop_area = Rectangle::new(
+        Point::zero(),
+        Size {
+            width: 120,
+            height: 45,
+        },
+    );
 
     let cropped_canvas = canvas
         .crop(&crop_area)
         .expect("Should crop")
-        .place_at(Point::new(150, 120) / 6);
+        .place_at(Point { x: 50, y: 50 });
 
     cropped_canvas.draw(&mut display)?;
 
     let output_settings = OutputSettingsBuilder::new()
-        .theme(BinaryColorTheme::OledBlue)
+        // .theme(BinaryColorTheme::OledBlue)
         .build();
 
     Window::new("Canvas with cropping", &output_settings).show_static(&display);
