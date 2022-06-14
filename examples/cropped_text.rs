@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // In this example we:
     // 1. Create and draw an entire canvas on the display (on the left)
     //   - Filled the canvas with the color RED.
-    //   - Write a text saying "This text will be\ncropped here" 
+    //   - Write a text saying "This text will be\ncropped here"
     // 2. Crop the text "cropped here" from the entire canvas (on the right)
 
     let mut display = SimulatorDisplay::<Rgb555>::new(DISPLAY_360P);
