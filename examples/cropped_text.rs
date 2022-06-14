@@ -1,68 +1,74 @@
 use embedded_canvas::Canvas;
 use embedded_graphics::{
-    mono_font::{
-        ascii::{FONT_10X20, FONT_9X18_BOLD},
-        MonoTextStyle,
-    },
+    mono_font::{ascii::FONT_10X20, MonoTextStyle},
     pixelcolor::Rgb555,
     prelude::*,
-    primitives::{PrimitiveStyle, Rectangle},
+    primitives::{PrimitiveStyleBuilder, Rectangle, StyledDrawable},
     text::Text,
 };
-use embedded_graphics_simulator::{
-    BinaryColorTheme, OutputSettingsBuilder, SimulatorDisplay, Window,
-};
+use embedded_graphics_simulator::{OutputSettingsBuilder, SimulatorDisplay, Window};
 
 pub const DISPLAY_240P: Size = Size::new(320, 240);
 pub const DISPLAY_360P: Size = Size::new(480, 360);
 pub const DISPLAY_720P: Size = Size::new(1280, 720);
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // We draw:
-    //   1. A box with an outline
-    //   2. The box should contain 3 lines of text
-    //   3. Only the middle line will be fully shown while
-    //      the others will be partially visible
+    // In this example we:
+    // 1. Create and draw an entire canvas on the display (on the left)
+    //   - Filled the canvas with the color RED.
+    //   - Write a text saying "This text will be\ncropped here" 
+    // 2. Crop the text "cropped here" from the entire canvas (on the right)
 
     let mut display = SimulatorDisplay::<Rgb555>::new(DISPLAY_360P);
 
     let canvas_size = Size {
-        width: 200,
-        height: 57,
+        width: 180,
+        height: 45,
     };
 
-    let mut canvas: Canvas<Rgb555> = Canvas::new(canvas_size);
+    // Draw on a Canvas filled with color and write text
+    let entire_canvas = {
+        let mut canvas: Canvas<Rgb555> = Canvas::new(canvas_size);
 
-    let canvas_outline = Rectangle::new(Point::zero(), canvas_size);
-    let canvas_style = PrimitiveStyle::new();
-    let canvas_rectangle = canvas_outline.into_styled(canvas_style);
+        let canvas_fill = PrimitiveStyleBuilder::new().fill_color(Rgb555::RED).build();
 
-    canvas_rectangle.draw(&mut canvas)?;
+        // Fill the canvas with a color to be more visible what we actually crop
+        Rectangle::new(Point::zero(), canvas_size).draw_styled(&canvas_fill, &mut canvas)?;
 
-    let text_str = "Cropping a \ntext into a \nmagic box.";
-    let style = MonoTextStyle::new(&FONT_10X20, Rgb555::WHITE);
-    let text = Text::new(text_str, Point::new(4, 15), style);
+        let text_str = "This text will be\ncropped here";
+        let style = MonoTextStyle::new(&FONT_10X20, Rgb555::WHITE);
+        let text = Text::new(text_str, Point::new(4, 15), style);
 
-    text.draw(&mut canvas)?;
+        text.draw(&mut canvas)?;
 
-    let crop_area = Rectangle::new(
-        Point::zero(),
-        Size {
-            width: 120,
-            height: 45,
-        },
-    );
+        canvas
+    };
 
-    let cropped_canvas = canvas
-        .crop(&crop_area)
-        .expect("Should crop")
-        .place_at(Point { x: 50, y: 50 });
+    // place the canvas on the display
+    entire_canvas
+        .place_at(Point::new(5, 10))
+        .draw(&mut display)
+        .expect("Should draw canvas");
 
-    cropped_canvas.draw(&mut display)?;
+    // Crop only the text saying "smaller box" from the entire_canvas
+    let cropped_canvas = {
+        let crop_area = Rectangle::new(
+            Point::new(0, 20),
+            Size {
+                width: 130,
+                height: 30,
+            },
+        );
 
-    let output_settings = OutputSettingsBuilder::new()
-        // .theme(BinaryColorTheme::OledBlue)
-        .build();
+        entire_canvas.crop(&crop_area).expect("Should crop")
+    };
+
+    // Place the cropped canvas on the right side of the entire_canvas
+    cropped_canvas
+        .place_at(Point { x: 220, y: 10 })
+        .draw(&mut display)?;
+
+    let output_settings = OutputSettingsBuilder::new().build();
 
     Window::new("Canvas with cropping", &output_settings).show_static(&display);
 
