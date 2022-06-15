@@ -1,5 +1,3 @@
-extern crate alloc;
-
 use alloc::{boxed::Box, vec};
 
 use embedded_graphics_core::{prelude::*, primitives::Rectangle};
@@ -16,6 +14,10 @@ pub struct Canvas<C: PixelColor> {
 
 impl<C: PixelColor> Canvas<C> {
     /// Create a new blank [`Canvas`].
+    ///
+    /// # Panics
+    ///
+    /// Panics when width * height > [`usize::MAX`].
     pub fn new(canvas: Size) -> Self {
         Self {
             canvas,
@@ -24,6 +26,10 @@ impl<C: PixelColor> Canvas<C> {
     }
 
     /// Create a [`Canvas`] filled with a default color.
+    ///
+    /// # Panics
+    ///
+    /// Panics when width * height > [`usize::MAX`].
     pub fn with_default_color(canvas: Size, default_color: C) -> Self {
         Self {
             canvas,
@@ -137,6 +143,10 @@ pub struct CanvasAt<C: PixelColor> {
 
 impl<C: PixelColor> CanvasAt<C> {
     /// Create a new blank [`CanvasAt`].
+    ///
+    /// # Panics
+    ///
+    /// Panics when width * height > [`usize::MAX`].
     pub fn new(top_left: Point, canvas: Size) -> Self {
         let pixels = new_pixels(canvas, None);
 
@@ -148,6 +158,10 @@ impl<C: PixelColor> CanvasAt<C> {
     }
 
     /// Create a [`CanvasAt`] filled with a default color.
+    ///
+    /// # Panics
+    ///
+    /// Panics when width * height > [`usize::MAX`].
     pub fn with_default_color(top_left: Point, canvas: Size, default_color: C) -> Self {
         let pixel_count = canvas.width as usize * canvas.height as usize;
 
@@ -161,11 +175,10 @@ impl<C: PixelColor> CanvasAt<C> {
     }
 
     /// Create a new blank [`CanvasAt`] with a set center on the display.
-    pub fn with_center(center: Point, size: Size) -> Self {
-        // todo: use our own center_offset like in this assoc. fn
-        let rect = Rectangle::with_center(center, size);
+    pub fn with_center(center: Point, canvas: Size) -> Self {
+        let top_left = center - center_offset(canvas);
 
-        Self::new(rect.top_left, size)
+        Self::new(top_left, canvas)
     }
 
     /// Returns the center of the bounding box.
@@ -295,14 +308,14 @@ impl<C: PixelColor> embedded_graphics::transform::Transform for CanvasAt<C> {
 ///
 /// The center offset is defined as the offset between the top left corner and
 /// the center point of a rectangle with the given size.
-fn center_offset(size: Size) -> Size {
+pub(crate) fn center_offset(size: Size) -> Size {
     size.saturating_sub(Size::new_equal(1)) / 2
 }
 
 /// Generic function that will take into account the top_left offset when returning the index
 // TODO: make safer
 fn point_to_index(size: Size, top_left_offset: Point, point: Point) -> Option<usize> {
-    // we must account for the top-left corner of the drawing box
+    // we must account for the top_left corner of the drawing box
     if let Ok((x, y)) = <(u32, u32)>::try_from(point - top_left_offset) {
         if x < size.width && y < size.height {
             return Some((x + y * size.width) as usize);
