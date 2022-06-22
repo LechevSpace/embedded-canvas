@@ -2,7 +2,7 @@ use embedded_canvas::Canvas;
 use embedded_graphics::{
     pixelcolor::Rgb555,
     prelude::*,
-    primitives::{Circle, PrimitiveStyle, Rectangle},
+    primitives::{Circle, PrimitiveStyle, Rectangle, StyledDrawable},
 };
 use embedded_graphics_simulator::{OutputSettingsBuilder, SimulatorDisplay, Window};
 
@@ -13,7 +13,7 @@ pub const DISPLAY_720P: Size = Size::new(1280, 720);
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut display = SimulatorDisplay::<Rgb555>::new(DISPLAY_360P);
 
-    let rec_size = Size {
+    let rectangle_size = Size {
         width: 200,
         height: 200,
     };
@@ -23,21 +23,28 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         height: 100,
     };
 
-    let rectangle = Rectangle::new(Point::new(140, 75), rec_size)
-        .into_styled(PrimitiveStyle::with_fill(Rgb555::BLUE));
-    rectangle.draw(&mut display)?;
+    let rectangle_fill = PrimitiveStyle::with_fill(Rgb555::BLUE);
+    let circle_fill = PrimitiveStyle::with_fill(Rgb555::YELLOW);
 
+    // Created a rectangle filled with color and drawn on display.
+    Rectangle::with_center(display.bounding_box().center(), rectangle_size)
+        .draw_styled(&rectangle_fill, &mut display)?;
+
+    // Draw a shape filled with color on Canvas
     let canvas = {
         let mut canvas: Canvas<Rgb555> = Canvas::new(canvas_size);
 
-        let circle =
-            Circle::new(Point::zero(), 99).into_styled(PrimitiveStyle::with_fill(Rgb555::BLACK));
-        circle.draw(&mut canvas)?;
+        // Draw a circle on the canvas and fill with color
+        Circle::with_center(canvas.bounding_box().center(), 99)
+            .draw_styled(&circle_fill, &mut canvas)?;
 
         canvas
     };
 
-    canvas.place_at(Point::new(190, 120)).draw(&mut display)?;
+    // place the canvas in the center of the display
+    canvas
+        .place_center(display.bounding_box().center())
+        .draw(&mut display)?;
 
     let output_settings = OutputSettingsBuilder::new().build();
 
