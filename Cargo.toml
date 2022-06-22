@@ -16,6 +16,14 @@ edition = "2021"
 # Edition 2021 requires at least 1.56
 rust-version = "1.56"
 
+[[example]]
+name = "canvas"
+required-features = ["embedded-graphics"]
+
+[[example]]
+name = "cropped_text"
+required-features = ["embedded-graphics"]
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
