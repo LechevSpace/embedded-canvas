@@ -24,7 +24,7 @@ The main advantages of the canvases in this crate are:
 _Example: Transparency - The canvas content (a circle) is drawn on the display where
 there's already a drawn square._
 
-1. **Cropping** - The ability to crop leaves only the part of the canvas you want to
+2. **Cropping** - The ability to crop leaves only the part of the canvas you want to
   draw on the display. This is especially useful when you want to
   partially show text, figures and images.
 
