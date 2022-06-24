@@ -21,6 +21,10 @@ name = "canvas"
 required-features = ["embedded-graphics"]
 
 [[example]]
+name = "transparency"
+required-features = ["embedded-graphics"]
+
+[[example]]
 name = "cropped_text"
 required-features = ["embedded-graphics"]
 
