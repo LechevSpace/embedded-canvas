@@ -1,6 +1,6 @@
 [package]
 name = "embedded-canvas"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Lechev.space <dev@lechev.space>", "Lachezar Lechev"]
 description = "Draw anything with ease on the Canvas before drawing it to your small hardware display"
 categories = ["embedded", "no-std"]
@@ -38,9 +38,9 @@ default = ["transform"]
 transform = ["embedded-graphics"]
 
 [dependencies]
-embedded-graphics-core = "0.3.3"
+embedded-graphics-core = "0.3"
 
-embedded-graphics = {version = "0.7.1", optional = true}
+embedded-graphics = {version = "0.7", optional = true}
 
 [dev-dependencies]
-embedded-graphics-simulator = "^0.3.0"
+embedded-graphics-simulator = "0.3"
