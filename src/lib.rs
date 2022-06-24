@@ -14,12 +14,25 @@
 //! The main advantages of the canvases in this crate are:
 //!
 //! 1. **Transparency** - pixels that haven't been drawn, won't override pixels on the display.
+//!
+//! ![Example: Transparency][transparency_screenshot]
+//!
+//!_Example: Transparency - The canvas content (a circle) is drawn on the display where
+//! there's already a drawn square._
+//!
 //! 2. **Cropping** - The ability to crop leaves only the part of the canvas you want to
 //! draw on the display. This is especially useful when you want to
 //! partially show text, figures and images.
 //!
+//! ![Example: Cropping text][cropping_text_screenshot]
+//!
+//! _Example: Cropping text - The full canvas content is drawn on the left and
+//! only portion of it is cropped and drawn on the right._
+//!
 //! [`embedded-graphics`]: https://crates.io/crates/embedded-graphics
 //! [`embedded-graphics-core`]: https://crates.io/crates/embedded-graphics-core
+//! [transparency_screenshot]: https://github.com/LechevSpace/embedded-canvas/raw/81de4494c36d0d76c552823b83d3ac446b27b636/examples/screenshots/transparency.png
+//! [cropping_text_screenshot]: https://github.com/LechevSpace/embedded-canvas/raw/81de4494c36d0d76c552823b83d3ac446b27b636/examples/screenshots/cropping_text.png
 //!
 //! # How to work with canvases
 //!
