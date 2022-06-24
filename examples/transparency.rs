@@ -6,11 +6,15 @@ use embedded_graphics::{
 };
 use embedded_graphics_simulator::{OutputSettingsBuilder, SimulatorDisplay, Window};
 
-pub const DISPLAY_240P: Size = Size::new(320, 240);
 pub const DISPLAY_360P: Size = Size::new(480, 360);
-pub const DISPLAY_720P: Size = Size::new(1280, 720);
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // In this example we:
+    // 1. Draw a square (200 x 200) in the middle of the display
+    // 2. Create a Canvas (100 x 100)
+    // 3. Draw a circle (diameter 99) in the center of the canvas
+    // 4. Draw the canvas on the middle of the display
+
     let mut display = SimulatorDisplay::<Rgb555>::new(DISPLAY_360P);
 
     let rectangle_size = Size {
@@ -30,7 +34,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Rectangle::with_center(display.bounding_box().center(), rectangle_size)
         .draw_styled(&rectangle_fill, &mut display)?;
 
-    // Draw a shape filled with color on Canvas
+    // Draw a circle filled with color on Canvas
     let canvas = {
         let mut canvas: Canvas<Rgb555> = Canvas::new(canvas_size);
 
