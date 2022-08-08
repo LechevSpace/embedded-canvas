@@ -1,6 +1,6 @@
 [package]
 name = "embedded-canvas"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Lechev.space <dev@lechev.space>", "Lachezar Lechev"]
 description = "Draw anything with ease on the Canvas before drawing it to your small hardware display"
 categories = ["embedded", "no-std"]
@@ -33,9 +33,10 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
-default = ["transform"]
+default = ["transform", "alloc"]
 # Enables `impl embedded_graphics::transform::Transform for CanvasAt`
 transform = ["embedded-graphics"]
+alloc = []
 
 [dependencies]
 embedded-graphics-core = "0.3"

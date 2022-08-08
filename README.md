@@ -13,7 +13,11 @@ can draw anything with ease before drawing the pixels on the embedded display.
 Based on [`embedded-graphics-core`] and [`embedded-graphics`]
 (see `transform` feature in [Crate features](#crate-features)).
 
-This crate is `no_std` but requires `alloc` for the time being.
+This crate is `no_std` and it has 2 sets of canvases:
+
+- `Canvas` and `CanvasAt` - require `alloc` feature
+- `CCanvas` and `CCanvasAt` - do **not** require `alloc` feature because they
+   use const generics instead.
 
 The main advantages of the canvases in this crate are:
 
@@ -43,30 +47,31 @@ only portion of it is cropped and drawn on the right._
 
 There are **two** main canvases you can work with:
 
-### `Canvas`
+### `Canvas` / `CCanavas`
 
 A canvas which you can draw on with origin `Point::zero()`.
 The canvas location is not set for the provided display.
 
 After drawing decide where to place it on the display using the methods:
-- `Canvas::place_at(top_left: Point) -> CanvasAt`
-- `Canvas::place_center(center: Point) -> CanvasAt`
+- `Canvas::place_at(top_left: Point) -> CanvasAt` (with `alloc` feature) or `CCanvas::place_at(top_left: Point) -> CCanvasAt`
+- `Canvas::place_center(center: Point) -> CanvasAt` (with `alloc` feature) or `CCanvas::place_center(center: Point) -> CCanvasAt`
 
-### `CanvasAt`
+### `CanvasAt` / `CCanvasAt`
 
-`CanvasAt` is a type of canvas ready to be drawn on the display at specified
-location (hence the name `CanvasAt`).
+`CanvasAt`/`CCanvasAt` are a type of canvas ready to be drawn on the display at specified
+location (hence the name `CanvasAt`/`CCanvasAt`).
 
-There are two ways of using `CanvasAt`:
+There are two ways of using `CanvasAt`/`CCanvasAt`:
 
-1. Directly placing the `CanvasAt` on specified location on the display and drawing inside.
-2. Create a `Canvas` and when ready to draw it on the display place the
-  `Canvas` at specified location using the methods:
-   - `Canvas::place_at(top_left: Point) -> CanvasAt`
-   - `Canvas::place_center(center: Point) -> CanvasAt`
+1. Directly placing the `CanvasAt`/`CCanavasAt` on specified location on the display and drawing inside.
+2. Create a `Canvas`/`CCanvas` and when ready to draw it on the display place the
+  `Canvas`/`CCanvas` at specified location using the methods:
+   - `Canvas::place_at(top_left: Point) -> CanvasAt` (with `alloc` feature) and `CCanvas::place_at(top_left: Point) -> CCanvasAt`
+   - `Canvas::place_center(center: Point) -> CanvasAt` (with `alloc` feature) and `CCanvas::place_center(center: Point) -> CCanvasAt`
 
 ## Crate features
 - `default` features - `transform`
+- `alloc` - enables `Canvas` and `CanvasAt`.
 - `transform` - enables the trait implementation of [`embedded_graphics::transform::Transform`] for `CanvasAt`.
 
 

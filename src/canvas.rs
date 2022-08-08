@@ -2,6 +2,8 @@ use alloc::{boxed::Box, vec};
 
 use embedded_graphics_core::{prelude::*, primitives::Rectangle};
 
+use crate::utils::center_offset;
+
 /// Canvas on which you can draw but it's not drawable on the display yet.
 ///
 /// Draw on the [`Canvas`] using origin of [`Point::zero()`].
@@ -302,14 +304,6 @@ impl<C: PixelColor> embedded_graphics::transform::Transform for CanvasAt<C> {
 
         self
     }
-}
-
-/// Returns the center offset.
-///
-/// The center offset is defined as the offset between the top left corner and
-/// the center point of a rectangle with the given size.
-pub(crate) fn center_offset(size: Size) -> Size {
-    size.saturating_sub(Size::new_equal(1)) / 2
 }
 
 /// Generic function that will take into account the top_left offset when returning the index
