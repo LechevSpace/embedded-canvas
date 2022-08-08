@@ -18,7 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Feature `alloc` - enables `Canvas` & `CanvasAt`
-- `CCanavas` & `CCanvasAt` - const generic alternatives to `Canvas` & `CanvasAt` which don't use `alloc`.
+- `CCanavas` & `CCanvasAt` - const generic alternatives to `Canvas` & `CanvasAt` which don't use `alloc` and update docs and README to include them
+- Fix typos in `Cargo.toml`
 
 ## [0.1.2] - 2022-06-24
 
