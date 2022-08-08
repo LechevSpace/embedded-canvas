@@ -8,8 +8,8 @@ categories = ["embedded", "no-std"]
 keywords = ["embedded-graphics", "graphics", "embedded"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/LechevSpace/embedded-canvas"
-documentation = "https://docs.rs/embedded-canavas"
-homepage = "https://github.com/LechevSpace/embedded-canavas"
+documentation = "https://docs.rs/embedded-canvas"
+homepage = "https://github.com/LechevSpace/embedded-canvas"
 
 edition = "2021"
 
