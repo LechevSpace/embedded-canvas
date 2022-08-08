@@ -72,8 +72,6 @@
 // the `docsrs` configuration attribute is defined
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-extern crate alloc;
-
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
