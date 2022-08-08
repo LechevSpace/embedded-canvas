@@ -79,12 +79,10 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[cfg(feature = "alloc")]
-#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 extern crate alloc;
 
 #[doc(inline)]
 #[cfg(feature = "alloc")]
-#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub use canvas::{Canvas, CanvasAt};
 
 #[doc(inline)]

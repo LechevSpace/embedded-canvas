@@ -7,6 +7,7 @@ use crate::utils::center_offset;
 /// Canvas on which you can draw but it's not drawable on the display yet.
 ///
 /// Draw on the [`Canvas`] using origin of [`Point::zero()`].
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub struct Canvas<C: PixelColor> {
     /// The size of the [`Canvas`].
     pub canvas: Size,
@@ -133,7 +134,9 @@ impl<C: PixelColor> DrawTarget for Canvas<C> {
 }
 
 /// Canvas which is drawable at the provided [`Point`] (location) on the display.
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 #[derive(Debug, Clone)]
+
 pub struct CanvasAt<C: PixelColor> {
     /// The top left offset where the [`CanvasAt`] will be drawn to the display.
     pub top_left: Point,
