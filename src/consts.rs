@@ -16,12 +16,21 @@ use crate::canvas::center_offset;
 ///
 /// The width (`W`) and height (`H`) constants of the [`CCanvas`]
 /// should less than [`u32::MAX`] as [`Size`] uses [`u32`].
-/// 
+///
 /// [const_generics_rfc]: https://rust-lang.github.io/rfcs/2000-const-generics.html
 pub struct CCanvas<C: PixelColor, const W: usize, const H: usize> {
     // we also store the size for working with embedded-graphics
     pub size: Size,
     pub pixels: [[Option<C>; W]; H],
+}
+
+impl<C, const W: usize, const H: usize> Default for CCanvas<C, W, H>
+where
+    C: PixelColor,
+{
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl<C, const W: usize, const H: usize> CCanvas<C, W, H>
@@ -92,8 +101,7 @@ where
         // it's safe to return `None` for Canvas too!
         let area_bottom_right = area.bottom_right()?;
 
-        let new_pixels = self.pixels.iter().enumerate().map(|(x, x_row)| {
-            
+        let new_pixels = self.pixels.iter().enumerate().flat_map(|(x, x_row)| {
             x_row.iter().enumerate().filter_map(move |(y, color)| {
                 let color = match color {
                     Some(color) => *color,
@@ -114,7 +122,7 @@ where
                     None
                 }
             })
-        }).flatten();
+        });
 
         new.draw_iter(new_pixels).ok().map(|_| new)
     }
@@ -151,13 +159,12 @@ impl<C: PixelColor, const W: usize, const H: usize> DrawTarget for CCanvas<C, W,
         I: IntoIterator<Item = Pixel<Self::Color>>,
     {
         for Pixel(point, color) in pixels.into_iter() {
-            match (usize::try_from(point.x).ok(), usize::try_from(point.y).ok()) {
-                (Some(x), Some(y)) => {
-                    self.pixels[x][y] = Some(color);
-                }
-                // if Pixel is outside of the canvas, skip it
-                _ => {}
-            };
+            // if Pixel is outside of the canvas, skip it
+            if let (Some(x), Some(y)) =
+                (usize::try_from(point.x).ok(), usize::try_from(point.y).ok())
+            {
+                self.pixels[x][y] = Some(color);
+            }
         }
 
         Ok(())
@@ -295,17 +302,14 @@ impl<C: PixelColor, const W: usize, const H: usize> DrawTarget for CCanvasAt<C, 
             // account for the top_left offset of the CanvasAt
             let point_adjusted = point - self.top_left;
 
-            match (
+            // skip if:
+            // - Pixel's Point is outside of the canvas
+            // - Pixel's Point is not `usize` representable
+            if let (Some(x), Some(y)) = (
                 usize::try_from(point_adjusted.x).ok(),
                 usize::try_from(point_adjusted.y).ok(),
             ) {
-                (Some(x), Some(y)) => {
-                    self.pixels[x][y] = Some(color);
-                }
-                // skip if:
-                // - Pixel's Point is outside of the canvas
-                // - Pixel's Point is not `usize` representable
-                _ => {}
+                self.pixels[x][y] = Some(color);
             };
         }
 
