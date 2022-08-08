@@ -92,3 +92,5 @@ pub use consts::{CCanvas, CCanvasAt};
 mod canvas;
 
 mod consts;
+
+pub(crate) mod utils;

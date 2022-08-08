@@ -7,7 +7,7 @@ use embedded_graphics_core::{
     primitives::Rectangle,
 };
 
-use crate::canvas::center_offset;
+use crate::utils::center_offset;
 
 /// Canvas on which you can draw but it's not drawable on the display yet.
 /// Implemented using [const generics][const_generics_rfc].
