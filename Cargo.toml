@@ -39,9 +39,9 @@ transform = ["embedded-graphics"]
 alloc = []
 
 [dependencies]
-embedded-graphics-core = "0.3"
+embedded-graphics-core = "0.4"
 
-embedded-graphics = {version = "0.7", optional = true}
+embedded-graphics = {version = "0.8", optional = true}
 
 [dev-dependencies]
 embedded-graphics-simulator = "0.3"
