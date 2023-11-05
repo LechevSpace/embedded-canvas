@@ -44,4 +44,4 @@ embedded-graphics-core = "0.4"
 embedded-graphics = {version = "0.8", optional = true}
 
 [dev-dependencies]
-embedded-graphics-simulator = "0.3"
+embedded-graphics-simulator = "0.5"
