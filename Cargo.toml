@@ -13,8 +13,8 @@ homepage = "https://github.com/LechevSpace/embedded-canvas"
 
 edition = "2021"
 
-# Edition 2021 requires at least 1.56
-rust-version = "1.56"
+#An embedded-graphics dependency requires 1.71
+rust-version = "1.71"
 
 [[example]]
 name = "canvas"
