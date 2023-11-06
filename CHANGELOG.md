@@ -9,9 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Removed
+
+## [0.3.0] - 2023-11-06
+
+### Added
+
 - `#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]` in `lib.rs` for `canvas` module.
 
 ### Changed
+- Updated dependencies: `embedded-graphics-core@0.4` `embedded-graphics@0.8` & dev-dependency `embedded-graphics-simulator@0.5` - [PR #11](https://github.com/LechevSpace/embedded-canvas/pull/11)
+- Bumped MSRV from 1.56 to 1.71 [PR #12](https://github.com/LechevSpace/embedded-canvas/pull/12)
 
 ### Removed
 
@@ -55,7 +65,8 @@ This first release is `no_std` but requires `alloc` for embedded devices.
 **Full Changelog**: https://github.com/LechevSpace/embedded-canvas/commits/v0.1.0
 
 
-[Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.1.1...v0.2.0
 [0.1.2]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.1.0...v0.1.1

@@ -1,6 +1,6 @@
 [package]
 name = "embedded-canvas"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Lechev.space <dev@lechev.space>", "Lachezar Lechev"]
 description = "Draw anything with ease on the Canvas before drawing it to your small hardware display"
 categories = ["embedded", "no-std"]
@@ -13,7 +13,7 @@ homepage = "https://github.com/LechevSpace/embedded-canvas"
 
 edition = "2021"
 
-#An embedded-graphics dependency requires 1.71
+# An embedded-graphics dependency requires 1.71
 rust-version = "1.71"
 
 [[example]]
