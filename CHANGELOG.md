@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1](https://github.com/LechevSpace/embedded-canvas/compare/v0.3.0...v0.3.1) - 2024-05-11
+
+### Added
+- *(release-plz)* config for replacing PR and issue `#..` with urls
+- *(ci)* dependabot.yml for outdated actions
+
+### Fixed
+- *(release-plz)* config - add commit_preprocessors
+- *(consts)* CCanvas - switched Width and Hight in pixels array
+
+### Other
+- Merge branch 'main' into dependabot/github_actions/actions/checkout-4
+- release-plz PR workflow
+- *(Cargo.toml)* Upgrade dependencies
+
 ### Added
 
 ### Changed
