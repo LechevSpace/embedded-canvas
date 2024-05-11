@@ -128,7 +128,7 @@ checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
 
 [[package]]
 name = "embedded-canvas"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "embedded-graphics",
  "embedded-graphics-core",
