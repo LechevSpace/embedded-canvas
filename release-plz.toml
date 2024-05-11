@@ -1,0 +1,7 @@
+[changelog]
+
+link_parsers = [
+  # Extract all GitHub issues and PRs and generate URLs linking to them.
+  # The link text will be the matching pattern.
+  { pattern = "#(\\d+)", href = "https://github.com/LechevSpace/embedded-canvas/issues/$1" },
+]
