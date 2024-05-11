@@ -21,7 +21,7 @@ use crate::utils::center_offset;
 pub struct CCanvas<C: PixelColor, const W: usize, const H: usize> {
     // we also store the size for working with embedded-graphics
     pub size: Size,
-    pub pixels: [[Option<C>; W]; H],
+    pub pixels: [[Option<C>; H]; W],
 }
 
 impl<C, const W: usize, const H: usize> Default for CCanvas<C, W, H>
@@ -46,7 +46,7 @@ where
     pub fn new() -> Self {
         Self {
             size: Size::new(W as u32, H as u32),
-            pixels: [[None; W]; H],
+            pixels: [[None; H]; W],
         }
     }
 
@@ -59,7 +59,7 @@ where
     pub fn with_default_color(default_color: C) -> Self {
         Self {
             size: Size::new(W as u32, H as u32),
-            pixels: [[Some(default_color); W]; H],
+            pixels: [[Some(default_color); H]; W],
         }
     }
 
@@ -179,7 +179,7 @@ pub struct CCanvasAt<C: PixelColor, const W: usize, const H: usize> {
     /// The size of the [`CCanvasAt`].
     size: Size,
     /// The pixels of the [`CCanvasAt`].
-    pub pixels: [[Option<C>; W]; H],
+    pub pixels: [[Option<C>; H]; W],
 }
 
 impl<C, const W: usize, const H: usize> CCanvasAt<C, W, H>
@@ -196,7 +196,7 @@ where
         Self {
             top_left,
             size: Size::new(W as u32, H as u32),
-            pixels: [[None; W]; H],
+            pixels: [[None; H]; W],
         }
     }
 
@@ -208,7 +208,7 @@ where
         Self {
             top_left,
             size: Size::new(W as u32, H as u32),
-            pixels: [[Some(default_color); W]; H],
+            pixels: [[Some(default_color); H]; W],
         }
     }
 
