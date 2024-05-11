@@ -1,4 +1,8 @@
 [changelog]
+commit_preprocessors = [
+  # Replace the issue number with the link.
+  { pattern = "\\(#([0-9]+)\\)", replace = "([#${1}](https://github.com/LechevSpace/embedded-canvas/issues/${1}))"}
+]
 
 link_parsers = [
   # Extract all GitHub issues and PRs and generate URLs linking to them.
