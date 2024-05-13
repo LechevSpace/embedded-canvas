@@ -11,13 +11,6 @@ jobs:
   build-and-test:
     name: Build and test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust:
-          - stable
-          - beta
-          - nightly
-          - 1.71 # MSRV
 
     steps:
       - uses: actions/checkout@v4
@@ -28,58 +21,38 @@ jobs:
           sudo apt-get update -y -qq
           sudo apt-get install libsdl2-dev
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          override: true
-
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-
-      - name: Run tests with --no-default-features
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --no-default-features
+      - name: Rust setup (stable)
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Run tests with --all-features
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all-features
+        run: cargo test --all-features
+
+      - name: Run tests with --no-default-features
+        run: cargo test --no-default-features
+
+      - name: Build
+        run: cargo build --all-features
 
   lints-and-checks:
     name: Lints and checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rust setup (nightly)
+        uses: dtolnay/rust-toolchain@nightly
         with:
-          submodules: true
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-          profile: minimal
           components: rust-docs, rustfmt, clippy
 
-      - name: Rustfmt lints
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
-
-      - name: Clippy lints
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --no-deps -- -D warnings
+      - name: Lint - rustfmt
+        run: cargo fmt --all -- --check
+    
+      - name: Lint - clippy
+        run: cargo clippy --all --no-deps -- -D warnings
 
       - name: Build docs with --all-features
-        uses: actions-rs/cargo@v1
         env:
           RUSTDOCFLAGS: -D warnings --cfg docsrs
-        with:
-          command: doc
-          args: --no-deps --all-features
+        run: cargo doc --no-deps --all-features
+
