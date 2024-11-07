@@ -8,6 +8,7 @@ use crate::utils::center_offset;
 ///
 /// Draw on the [`Canvas`] using origin of [`Point::zero()`].
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+#[derive(Clone)]
 pub struct Canvas<C: PixelColor> {
     /// The size of the [`Canvas`].
     pub canvas: Size,

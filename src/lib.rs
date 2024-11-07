@@ -12,7 +12,7 @@
 //! This crate is `no_std` and it has 2 sets of canvases:
 //! - [`Canvas`] and [`CanvasAt`] - require `alloc` feature
 //! - [`CCanvas`] and [`CCanvasAt`] - do **not** require `alloc` feature because they
-//!  use const generics instead.
+//!   use const generics instead.
 //!
 //! The main advantages of the canvases in this crate are:
 //!
@@ -24,8 +24,8 @@
 //! there's already a drawn square._
 //!
 //! 2. **Cropping** - The ability to crop leaves only the part of the canvas you want to
-//! draw on the display. This is especially useful when you want to
-//! partially show text, figures and images.
+//!    draw on the display. This is especially useful when you want to
+//!    partially show text, figures and images.
 //!
 //! ![Example: Cropping text][cropping_text_screenshot]
 //!
@@ -59,7 +59,7 @@
 //!
 //! 1. Directly placing the [`CanvasAt`]/[`CCanvasAt`] on specified location on the display and drawing inside.
 //! 2. Create a [`Canvas`]/[`CCanvas`] and when ready to draw it on the display place the
-//!  [`Canvas`]/[`CCanvas`] at specified location using the methods:
+//!    [`Canvas`]/[`CCanvas`] at specified location using the methods:
 //!    - `Canvas::place_at(top_left: Point) -> CanvasAt` (with `alloc` feature) and `CCanvas::place_at(top_left: Point) -> CCanvasAt`
 //!    - `Canvas::place_center(center: Point) -> CanvasAt` (with `alloc` feature) and `CCanvas::place_center(center: Point) -> CCanvasAt`
 //!
