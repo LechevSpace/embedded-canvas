@@ -9,7 +9,7 @@ use crate::utils::center_offset;
 /// Draw on the [`Canvas`] using origin of [`Point::zero()`].
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 #[derive(Clone)]
-pub struct Canvas<C: PixelColor> {
+pub struct Canvas<C> {
     /// The size of the [`Canvas`].
     pub canvas: Size,
     /// The pixels of the [`Canvas`].
@@ -54,7 +54,9 @@ impl<C: PixelColor> Canvas<C> {
     pub fn center(&self) -> Point {
         Point::zero() + center_offset(self.canvas)
     }
+}
 
+impl<C: PixelColor> Canvas<C> {
     /// Create a new cropped [`Canvas`].
     ///
     /// This method takes into account the top left [`Point`] of the `area`
@@ -110,7 +112,7 @@ impl<C: PixelColor> Canvas<C> {
     }
 }
 
-impl<C: PixelColor> OriginDimensions for Canvas<C> {
+impl<C> OriginDimensions for Canvas<C> {
     fn size(&self) -> Size {
         self.canvas
     }
@@ -138,7 +140,7 @@ impl<C: PixelColor> DrawTarget for Canvas<C> {
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 #[derive(Debug, Clone)]
 
-pub struct CanvasAt<C: PixelColor> {
+pub struct CanvasAt<C> {
     /// The top left offset where the [`CanvasAt`] will be drawn to the display.
     pub top_left: Point,
     /// The size of the [`CanvasAt`].

@@ -18,16 +18,13 @@ use crate::utils::center_offset;
 /// should less than [`u32::MAX`] as [`Size`] uses [`u32`].
 ///
 /// [const_generics_rfc]: https://rust-lang.github.io/rfcs/2000-const-generics.html
-pub struct CCanvas<C: PixelColor, const W: usize, const H: usize> {
+pub struct CCanvas<C, const W: usize, const H: usize> {
     // we also store the size for working with embedded-graphics
     pub size: Size,
     pub pixels: [[Option<C>; H]; W],
 }
 
-impl<C, const W: usize, const H: usize> Default for CCanvas<C, W, H>
-where
-    C: PixelColor,
-{
+impl<C: Copy + PartialEq, const W: usize, const H: usize> Default for CCanvas<C, W, H> {
     fn default() -> Self {
         Self::new()
     }
@@ -35,7 +32,7 @@ where
 
 impl<C, const W: usize, const H: usize> CCanvas<C, W, H>
 where
-    C: PixelColor,
+    C: Copy + PartialEq,
 {
     /// Create a new blank [`CCanvas`].
     ///
@@ -82,7 +79,12 @@ where
     pub fn center(&self) -> Point {
         Point::zero() + center_offset(self.size)
     }
+}
 
+impl<C, const W: usize, const H: usize> CCanvas<C, W, H>
+where
+    C: PixelColor,
+{
     /// Create a new cropped [`CCanvas`].
     ///
     /// This method takes into account the top left [`Point`] of the `area`
@@ -144,7 +146,7 @@ where
     }
 }
 
-impl<C: PixelColor, const W: usize, const H: usize> OriginDimensions for CCanvas<C, W, H> {
+impl<C, const W: usize, const H: usize> OriginDimensions for CCanvas<C, W, H> {
     fn size(&self) -> Size {
         self.size
     }
