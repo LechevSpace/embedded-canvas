@@ -1,6 +1,6 @@
 [package]
 name = "embedded-canvas"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["Lechev.space <dev@lechev.space>", "Lachezar Lechev"]
 description = "Draw anything with ease on the Canvas before drawing it to your small hardware display"
 categories = ["embedded", "no-std"]
