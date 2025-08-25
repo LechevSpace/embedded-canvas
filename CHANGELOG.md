@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2](https://github.com/LechevSpace/embedded-canvas/compare/v0.3.1...v0.3.2) - 2025-08-25
+
+### Fixed
+
+- *(ci)* msrv workflow need to install SDL2
+
+### Other
+
+- *(deps)* bump actions/checkout from 4 to 5
+- Remove unnecessary trait bounds
+- Fix docs formatting to appease clippy
+- Derive Clone for Canvas<C>
+- *(msrv)* add independant msrv workflow
+- *(ci)* ci workflow - use rust-toolchain action and optimize the workflow
+
 ## [0.3.1](https://github.com/LechevSpace/embedded-canvas/compare/v0.3.0...v0.3.1) - 2024-05-11
 
 ### Added
